@@ -30,18 +30,25 @@ namespace CampaignApi.Models
 
         [Column("create_date")]
         public DateTime CreateDate { get; set; }
+
         [Column("campaign_name")]
         public string CampaignName { get; set; }
+
         [Column("start_date")]
         public DateTime StartDate { get; set; }
+
         [Column("end_date")]
         public DateTime EndDate { get; set; }
+
         [Column("reward_type")]
         public RewardType RewardType { get; set; }
+
         [Column("state")]
         public State State { get; set; }
+
         [Column("status")]
         public Status Status { get; set; }
+
         [Column ("is_deleted")]
         public bool IsDeleted { get; set; }
     }

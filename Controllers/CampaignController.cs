@@ -49,7 +49,7 @@ namespace CampaignApi.Controllers
             return Ok();
         }
         [HttpPost("clone")]
-        public async Task<IActionResult> cloneCampaign(int id)
+        public async Task<IActionResult> CloneCampaign(int id)
         {
             return Ok(await _campaignService.CloneCampaign(id));
         }

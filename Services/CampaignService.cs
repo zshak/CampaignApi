@@ -128,17 +128,18 @@ namespace CampaignApi.Services
 
         public async Task<int> CloneCampaign(int id)
         {
-            using (var connection = new NpgsqlConnection(_connector.ConnectionStrings))
+            using (var connection = new NpgsqlConnection(_connector.ConnectionStrings)) // s seeee 
             {
                 var nameQuery = "select case when position('(' in campaign_name) > 0 then substr(campaign_name, 1, position('(' in campaign_name) - 2)" +
                     "else campaign_name end from campaigns where id = @id";
                 var campaignName = await connection.QuerySingleOrDefaultAsync<string>(nameQuery, new { id });
                 var numNamesQuey = "select count(*) from campaigns where campaign_name like @SearchName";
-                var numNames = await connection.QuerySingleOrDefaultAsync<int>(numNamesQuey, new { SearchName = $"{campaignName}%" });
+                var numNames = await connection.QuerySingleOrDefaultAsync<int>(numNamesQuey, new { SearchName = $"{campaignName} (%)", campaignName});
 
                 var campaignToCloneQuery = "select id as Id, create_date as CreateDate, campaign_name as CampaignName, start_date as StartDate, end_date as EndDate, reward_type as RewardType, state as State, status as Status, is_deleted as IsDeleted from campaigns where id = @id";
                 var camp = await connection.QuerySingleOrDefaultAsync<Campaign>(campaignToCloneQuery, new {id});
-                
+
+                numNames++;
                 camp.CampaignName = campaignName + $" ({numNames})";
                 camp.CreateDate = DateTime.UtcNow;
                 var query = "INSERT INTO campaigns (create_date, campaign_name, start_date, end_date, reward_type, state, status, is_deleted)" +
@@ -152,7 +153,10 @@ namespace CampaignApi.Services
         {
             using (var connection = new NpgsqlConnection(_connector.ConnectionStrings))
             {
-                var campaignToCloneQuery = "select id as Id, create_date as CreateDate, campaign_name as CampaignName, start_date as StartDate, end_date as EndDate, reward_type as RewardType, state as State, status as Status, is_deleted as IsDeleted from campaigns";
+                var campaignToCloneQuery = @"select id as Id, create_date as CreateDate, campaign_name as CampaignName, start_date as StartDate,
+                                end_date as EndDate, reward_type as RewardType, state as State, 
+                            status as Status, is_deleted as IsDeleted from campaigns
+                            ORDER BY create_date DESC";
                 var camp = await connection.QueryAsync<Campaign>(campaignToCloneQuery);
 
                 return camp.ToList();
